@@ -15,6 +15,7 @@ import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Base64;
+import java.util.concurrent.TimeUnit;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -30,8 +31,6 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class Encryption {
 
-	
-	
 	static {
 		Security.addProvider(new BouncyCastleProvider());
 	}
@@ -52,26 +51,33 @@ public class Encryption {
 		byte[] buffer = new byte[16];
 		random.nextBytes(buffer);
 		iv = new IvParameterSpec(buffer);	
+		
 	}
 
 	public String getkey(){
-		
 		keytext = Base64.getEncoder().encodeToString(key.getEncoded());
 		return keytext;
 	}
 	
 	public String getIV(){
-		IVtext = iv.toString();
-		return IVtext;
-		
+		IVtext = Base64.getEncoder().encodeToString(iv.getIV());
+		return IVtext;	
 	}
 
-	public String decrypt(String ciphertext) throws Exception {
+	public String decrypt(String ciphertext, String keytext, String ivtext) throws Exception {
+		byte[] decodediv = Base64.getDecoder().decode(ivtext);
+		iv = new IvParameterSpec(decodediv);
+		byte[] decodedkey = Base64.getDecoder().decode(keytext);
+		key = new SecretKeySpec(decodedkey, 0, decodedkey.length, "AES"); 
 		decryptedmessage = decryptWithAes(ciphertextarray); 
 		return decryptedmessage;
 	}
 
-	public String encrypt(String message) throws Exception {
+	public String encrypt(String message, String keytext, String ivtext) throws Exception {
+		byte[] decodediv = Base64.getDecoder().decode(ivtext);
+		iv = new IvParameterSpec(decodediv);	
+		byte[] decodedkey = Base64.getDecoder().decode(keytext);
+		key = new SecretKeySpec(decodedkey, 0, decodedkey.length, "AES");
 		ciphertextarray = encryptWithAes(message, key, iv);
 		ciphertext = new String(ciphertextarray);
 		return ciphertext;

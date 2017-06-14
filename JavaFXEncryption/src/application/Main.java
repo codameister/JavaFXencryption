@@ -22,6 +22,10 @@ import javafx.scene.control.TextField;
 public class Main extends Application {
 	public String plaintext;
 	public String ciphertext;
+	public String secretkey;
+	public String ivtext;
+
+
 	
 	
 	@Override
@@ -50,7 +54,7 @@ public class Main extends Application {
 	       Button generatekeys = new Button();
 	       generatekeys.setText("Generate New Keys");
 	       TextField keyTextField = new TextField();
-	       Label lblKey = new Label("256-bit Secret Key");
+	       Label lblKey = new Label("128-bit Secret Key");
 	       keyTextField.setPrefWidth(300);
 	       TextField iVTextField = new TextField();
 	       Label lblIV = new Label("Initialization Vector");
@@ -72,9 +76,11 @@ public class Main extends Application {
 	            @Override
 	            public void handle(ActionEvent event) {
 	                plaintext = plainTextField.getText();
+	                secretkey = keyTextField.getText();
+	                ivtext = iVTextField.getText();
 	                  
 	                try {
-						ciphertext = encryption.encrypt(plaintext);
+						ciphertext = encryption.encrypt(plaintext, secretkey, ivtext);
 						cipherTextField.setText(ciphertext);
 						plainTextField.setText("");
 
@@ -91,7 +97,9 @@ public class Main extends Application {
 	            @Override
 	            public void handle(ActionEvent event) {
 	            	try {
-						plaintext = encryption.decrypt(ciphertext);
+		                secretkey = keyTextField.getText();
+		                ivtext = iVTextField.getText();
+						plaintext = encryption.decrypt(ciphertext, secretkey, ivtext);
 						plainTextField.setText(plaintext);
 						cipherTextField.setText("");
 
@@ -99,9 +107,6 @@ public class Main extends Application {
 						plainTextField.setText("Keys have changed");
 						e.printStackTrace();
 					}
-	            	
-	            	
-	            
 	            }});
 			
 			generatekeys.setOnAction(new EventHandler<ActionEvent>() {
@@ -112,19 +117,15 @@ public class Main extends Application {
 	            		try {
 							encryption.generatekeys();
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						keyTextField.setText(encryption.getkey());
 						iVTextField.setText(encryption.getIV());
 	            	}
-	            
-		
 	            });
 				}catch(Exception e){
 	    			e.printStackTrace();
 				}
-			
 		}
 
 	
