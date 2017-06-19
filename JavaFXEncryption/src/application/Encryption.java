@@ -3,31 +3,19 @@ package application;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Base64;
-import java.util.concurrent.TimeUnit;
-
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
 
 public class Encryption {
 
@@ -99,7 +87,7 @@ public class Encryption {
 		return out.toByteArray();
 	}
 
-private String decryptWithAes(byte[] cipertextarray)
+	private String decryptWithAes(byte[] cipertextarray)
 		throws Exception {
 		ByteArrayInputStream in = new ByteArrayInputStream(cipertextarray);
 		Cipher aes = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
