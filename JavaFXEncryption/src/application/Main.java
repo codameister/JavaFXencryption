@@ -86,12 +86,13 @@ public class Main extends Application {
 	            	try {
 		                secretkey = keyTextField.getText();
 		                ivtext = iVTextField.getText();
+		                ciphertext = cipherTextField.getText();
 						plaintext = encryption.decrypt(ciphertext, secretkey, ivtext);
 						plainTextField.setText(plaintext);
 						cipherTextField.setText("");
 
 					} catch (Exception e) {
-						plainTextField.setText("Keys have changed");
+						plainTextField.setText("Invalid Input");
 						e.printStackTrace();
 					}
 	            }});

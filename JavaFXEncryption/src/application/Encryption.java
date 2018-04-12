@@ -25,7 +25,7 @@ public class Encryption {
 	
 	public SecretKey key;
 	public IvParameterSpec iv;
-	public byte[] ciphertextarray;
+	//public byte[] ciphertextarray;
 	public String decryptedmessage;
 	public String ciphertext;
 	private String keytext;
@@ -53,11 +53,12 @@ public class Encryption {
 	}
 
 	public String decrypt(String ciphertext, String keytext, String ivtext) throws Exception {
+		
 		byte[] decodediv = Base64.getDecoder().decode(ivtext);
 		iv = new IvParameterSpec(decodediv);
 		byte[] decodedkey = Base64.getDecoder().decode(keytext);
 		key = new SecretKeySpec(decodedkey, 0, decodedkey.length, "AES"); 
-		decryptedmessage = decryptWithAes(ciphertextarray); 
+		decryptedmessage = decryptWithAes(ciphertext, key, iv); 
 		return decryptedmessage;
 	}
 
@@ -66,8 +67,9 @@ public class Encryption {
 		iv = new IvParameterSpec(decodediv);	
 		byte[] decodedkey = Base64.getDecoder().decode(keytext);
 		key = new SecretKeySpec(decodedkey, 0, decodedkey.length, "AES");
-		ciphertextarray = encryptWithAes(message, key, iv);
-		ciphertext = new String(ciphertextarray);
+		byte[] ciphertextarray = encryptWithAes(message, key, iv);
+		ciphertext = Base64.getEncoder().encodeToString(ciphertextarray);
+		//ciphertext = new String(ciphertextarray);
 		return ciphertext;
 	}
 
@@ -77,7 +79,8 @@ public class Encryption {
 		Cipher aes = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
 		aes.init(Cipher.ENCRYPT_MODE, key, iv);
 		CipherOutputStream cipherOut = new CipherOutputStream(out, aes);
-		OutputStreamWriter writer = new OutputStreamWriter(cipherOut);	
+		OutputStreamWriter writer = new OutputStreamWriter(cipherOut);
+		
 		try {
 			writer.write(message);
 		}
@@ -87,14 +90,19 @@ public class Encryption {
 		return out.toByteArray();
 	}
 
-	private String decryptWithAes(byte[] cipertextarray)
+	private String decryptWithAes(String ciphertext, SecretKey key, IvParameterSpec iv)
 		throws Exception {
-		ByteArrayInputStream in = new ByteArrayInputStream(cipertextarray);
+
+		byte[] ciphertextarray = Base64.getDecoder().decode(ciphertext.getBytes());
+			
+		//byte[] ciphertextarray = ciphertext.getBytes();
+		
+		ByteArrayInputStream in = new ByteArrayInputStream(ciphertextarray);
 		Cipher aes = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
 		aes.init(Cipher.DECRYPT_MODE, key, iv);
 		CipherInputStream cipherIn = new CipherInputStream(in, aes);
 		InputStreamReader reader = new InputStreamReader(cipherIn);
-		BufferedReader bufferedReader = new BufferedReader(reader);	
+		BufferedReader bufferedReader = new BufferedReader(reader);
 		try {
 			return bufferedReader.readLine();
 		}
